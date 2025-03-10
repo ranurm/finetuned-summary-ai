@@ -4,6 +4,8 @@ import './SummaryAI.css';
 const SummaryAI = () => {
   const [mp4File, setMp4File] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [summary, setSummary] = useState('');
 
   const mp4InputRef = useRef(null);
   const pdfInputRef = useRef(null);
@@ -40,6 +42,43 @@ const SummaryAI = () => {
     const mp4Valid = mp4File && mp4File.type === 'video/mp4';
     const pdfValid = pdfFile && pdfFile.type === 'application/pdf';
     return mp4Valid || pdfValid;
+  };
+
+  const handleGenerateSummary = async () => {
+    if (!isValid()) return;
+
+    setLoading(true);
+
+    const formData = new FormData();
+    if (mp4File) formData.append('file', mp4File);
+    if (pdfFile) formData.append('file', pdfFile);
+
+    try {
+      let response;
+      if (mp4File) {
+        response = await fetch('http://127.0.0.1:8000/transcribe_video/', {
+          method: 'POST',
+          body: formData,
+        });
+      } else if (pdfFile) {
+        response = await fetch('http://127.0.0.1:8000/process_pdf/', {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setSummary(data.transcription || data.summary);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to generate summary. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -97,10 +136,18 @@ const SummaryAI = () => {
       {/* Proceed Button */}
       <button
         className={`proceed-btn ${isValid() ? 'valid' : 'invalid'}`}
-        disabled={!isValid()}
+        disabled={!isValid() || loading}
+        onClick={handleGenerateSummary}
       >
-        {isValid() ? 'Generate Summary' : 'Please upload a valid MP4 or PDF'}
+        {loading ? 'Generating...' : isValid() ? 'Generate Summary' : 'Please upload a valid MP4 or PDF'}
       </button>
+
+      {summary && (
+        <div className="summary-result">
+          <h3>Summary:</h3>
+          <p>{summary}</p>
+        </div>
+      )}
     </div>
   );
 };
