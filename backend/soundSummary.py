@@ -1,7 +1,7 @@
 import os
 import torch
 from transformers import pipeline, WhisperProcessor
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 
 def extract_audio(video_file: str, output_audio: str = "temp_audio.wav") -> str:
     """Extracts audio from an MP4 file and saves it as WAV."""

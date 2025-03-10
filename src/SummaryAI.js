@@ -48,34 +48,35 @@ const SummaryAI = () => {
     if (!isValid()) return;
 
     setLoading(true);
+    setSummary('Processing...'); // Add immediate feedback
 
     const formData = new FormData();
-    if (mp4File) formData.append('file', mp4File);
-    if (pdfFile) formData.append('file', pdfFile);
+    if (mp4File) formData.append('mp4_file', mp4File);
+    if (pdfFile) formData.append('pdf_file', pdfFile);
 
     try {
-      let response;
-      if (mp4File) {
-        response = await fetch('http://127.0.0.1:8000/transcribe_video/', {
-          method: 'POST',
-          body: formData,
-        });
-      } else if (pdfFile) {
-        response = await fetch('http://127.0.0.1:8000/process_pdf/', {
-          method: 'POST',
-          body: formData,
-        });
-      }
+      console.log('Sending files to backend...');
+      const response = await fetch('http://127.0.0.1:8000/generate_summary/', {
+        method: 'POST',
+        body: formData,
+      });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      setSummary(data.transcription || data.summary);
+      console.log('Received response:', data);
+      
+      if (data.summary) {
+        setSummary(data.summary);
+      } else {
+        setSummary('No summary was generated.');
+      }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to generate summary. Please try again.');
+      console.error('Error details:', error);
+      setSummary(`Error: ${error.message}`);
+      alert('Failed to generate summary. Check console for details.');
     } finally {
       setLoading(false);
     }
@@ -142,12 +143,16 @@ const SummaryAI = () => {
         {loading ? 'Generating...' : isValid() ? 'Generate Summary' : 'Please upload a valid MP4 or PDF'}
       </button>
 
-      {summary && (
-        <div className="summary-result">
-          <h3>Summary:</h3>
-          <p>{summary}</p>
-        </div>
-      )}
+      <div className="summary-result">
+        <h3>Summary:</h3>
+        <textarea
+          value={summary}
+          readOnly
+          rows="20"
+          cols="80"
+          placeholder="The generated summary will appear here..."
+        />
+      </div>
     </div>
   );
 };

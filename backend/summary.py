@@ -27,15 +27,18 @@ async def generate_summary(mp4_file: UploadFile = File(None), pdf_file: UploadFi
 
         # Process video file if provided
         if mp4_file:
+            print(f"Processing video file: {mp4_file.filename}")
             with NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
                 temp_file.write(await mp4_file.read())
                 temp_path = temp_file.name
 
             transcription = transcribe_audio(temp_path)
+            print(f"Transcription generated: {len(transcription)} characters")
             os.remove(temp_path)
 
         # Process PDF file if provided
         if pdf_file:
+            print(f"Processing PDF file: {pdf_file.filename}")
             with NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
                 temp_file.write(await pdf_file.read())
                 temp_path = temp_file.name
@@ -52,20 +55,33 @@ async def generate_summary(mp4_file: UploadFile = File(None), pdf_file: UploadFi
                 "Combine the texts into one paragraph. Do not add anything of your own."
             )
             pdf_summary = ask_llama(user_prompt, combined_context)
+            print(f"PDF summary generated: {len(pdf_summary)} characters")
             os.remove(temp_path)
 
         # Combine transcription and PDF summary
         combined_summary = f"Transcription:\n{transcription}\n\nPDF Summary:\n{pdf_summary}"
         
         user_prompt = (
-                "Combine the text given to you. They are from the same Teams meeting. One is the "
-                "talking during the meeting and one is the slides content"
-            )
-        summary = ask_llama(user_prompt, combined_summary)
+            "Combine the text given to you. They are from the same Teams meeting. One is the "
+            "talking during the meeting, transcription, and one is the slides content PDF summary."
+            "The talking is tiny bit more important than the slides. Combine the texts into one paragraph. "
+        )
+        final_summary = ask_llama(user_prompt, combined_summary)
+        print(f"Final summary generated: {len(final_summary)} characters")
 
-        return {"summary": summary}
+        return {
+            "summary": final_summary,
+            "status": "success",
+            "message": "Summary generated successfully"
+        }
+
     except Exception as e:
-        return {"error": str(e)}
+        print(f"Error in generate_summary: {str(e)}")
+        return {
+            "summary": "",
+            "status": "error",
+            "message": str(e)
+        }
 
 # Run FastAPI server
 if __name__ == "__main__":

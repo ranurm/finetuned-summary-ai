@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from groq import Groq
-from google.colab import userdata
 
 load_dotenv()
 api_key = os.getenv("CROGAPI_KEY")
@@ -69,7 +68,7 @@ def generate_image_captions(pdf_path, output_dir="extracted_images"):
             image_path = os.path.join(output_dir, f"page_{page_num + 1}_img_{img_index + 1}.jpg")
             with open(image_path, "wb") as f:
                 f.write(img_bytes)
-
+                
             image_paths.append(image_path)
 
     doc.close()
@@ -86,7 +85,7 @@ def generate_image_captions(pdf_path, output_dir="extracted_images"):
 
 def ask_llama(prompt, context):
     """Sends a prompt to the Llama model and returns a response."""
-    client = Groq(api_key=userdata.get('Crog_apikey'))
+    client = Groq(api_key=api_key)
     response = client.chat.completions.create(
         messages=[{"role": "user", "content": f"{prompt} {context}"}],
         model="llama-3.3-70b-versatile"
