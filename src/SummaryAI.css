@@ -1,0 +1,91 @@
+.summary-ai {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #f9fbfd;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+  }
+  
+  .summary-ai h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .upload-box {
+    border: 2px dashed #a0aec0;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+  }
+  
+  .upload-box:hover {
+    background-color: #f0f4f8;
+    border-color: #3182ce;
+    cursor: pointer;
+  }
+  
+  .upload-box p {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-bottom: 1rem;
+  }
+  
+  .upload-btn {
+    background-color: #3182ce;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .upload-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  .file-name {
+    margin-top: 0.8rem;
+    font-weight: 500;
+    color: #2d3748;
+    word-break: break-word;
+  }
+
+  .instruction-text {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+  
+  .proceed-btn {
+    margin-top: 1.5rem;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .proceed-btn.valid {
+    background-color: #38a169; /* Green */
+  }
+  
+  .proceed-btn.valid:hover {
+    background-color: #2f855a;
+  }
+  
+  .proceed-btn.invalid {
+    background-color: #e53e3e; /* Red */
+    cursor: not-allowed;
+  }
