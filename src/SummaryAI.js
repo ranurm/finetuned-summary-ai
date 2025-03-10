@@ -143,16 +143,15 @@ const SummaryAI = () => {
         {loading ? 'Generating...' : isValid() ? 'Generate Summary' : 'Please upload a valid MP4 or PDF'}
       </button>
 
-      <div className="summary-result">
-        <h3>Summary:</h3>
-        <textarea
-          value={summary}
-          readOnly
-          rows="20"
-          cols="80"
-          placeholder="The generated summary will appear here..."
-        />
-      </div>
+      {/* Summary Result */}
+      {summary && (
+        <div className="summary-result">
+          <h3>Summary:</h3>
+          <div className="summary-content">
+            <p className="summary-text">{summary}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

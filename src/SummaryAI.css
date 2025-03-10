@@ -89,3 +89,56 @@
     background-color: #e53e3e; /* Red */
     cursor: not-allowed;
   }
+
+  .summary-result {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff; /* White background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .summary-result h3 {
+    margin-bottom: 10px;
+    font-size: 1.5em;
+    color: #333;
+  }
+
+  .summary-content {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    min-height: 300px;
+  }
+
+  .summary-content textarea {
+    width: 100%;
+    height: 300px;
+    border: none;
+    resize: none;
+    font-size: 1em;
+    line-height: 1.5;
+    color: #ffffff;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .summary-text {
+    font-size: 1em;
+    line-height: 1.5;
+    color: #555;
+    white-space: pre-wrap; /* Preserve whitespace and line breaks */
+    text-align: left; /* Align text to the left */
+  }
+
+  .placeholder-text {
+    font-size: 1em;
+    line-height: 1.5;
+    color: #aaa;
+    text-align: left; /* Align text to the left */
+    margin-top: 100px; /* Center the placeholder text vertically */
+  }
