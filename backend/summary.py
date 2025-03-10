@@ -18,55 +18,52 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-@app.post("/transcribe_video/")
-async def transcribe_video(file: UploadFile = File(...)):
-    """API endpoint to receive a video file, transcribe its audio, and return the text."""
+@app.post("/generate_summary/")
+async def generate_summary(mp4_file: UploadFile = File(None), pdf_file: UploadFile = File(None)):
+    """API endpoint to receive a video file and/or a PDF file, process them, and return a combined summary."""
     try:
-        # Save the uploaded video file temporarily
-        with NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
-            temp_file.write(await file.read())
-            temp_path = temp_file.name
+        transcription = ""
+        pdf_summary = ""
+
+        # Process video file if provided
+        if mp4_file:
+            with NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
+                temp_file.write(await mp4_file.read())
+                temp_path = temp_file.name
+
+            transcription = transcribe_audio(temp_path)
+            os.remove(temp_path)
+
+        # Process PDF file if provided
+        if pdf_file:
+            with NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(await pdf_file.read())
+                temp_path = temp_file.name
+
+            pdf_text = extract_text_from_pdf(temp_path)
+            image_ocr_text = extract_images_and_ocr(temp_path)
+            image_captions_text = generate_image_captions(temp_path)
+
+            combined_context = f"{pdf_text}\n{image_ocr_text}\n{image_captions_text}"
+            user_prompt = (
+                "Combine the text given to you. They are from the same Teams meeting slides: "
+                "one is the slide text, another is the slide pictures' text, and one contains captions "
+                "generated for the pictures to help understand them better. "
+                "Combine the texts into one paragraph. Do not add anything of your own."
+            )
+            pdf_summary = ask_llama(user_prompt, combined_context)
+            os.remove(temp_path)
+
+        # Combine transcription and PDF summary
+        combined_summary = f"Transcription:\n{transcription}\n\nPDF Summary:\n{pdf_summary}"
         
-        # Transcribe the audio  
-        transcription = transcribe_audio(temp_path)
-        
-        # Remove the temporary video file
-        os.remove(temp_path)
-        
-        return {"transcription": transcription}
-    except Exception as e:
-        return {"error": str(e)}
-
-@app.post("/process_pdf/")
-async def process_pdf(file: UploadFile = File(...)):
-    """API endpoint to receive a PDF file, process it, and return the summary."""
-    try:
-        # Save PDF temporarily
-        with NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-            temp_file.write(await file.read())
-            temp_path = temp_file.name
-
-        # Extract content
-        pdf_text = extract_text_from_pdf(temp_path)
-        image_ocr_text = extract_images_and_ocr(temp_path)
-        image_captions_text = generate_image_captions(temp_path)
-
-        # Combine extracted data
-        combined_context = f"{pdf_text}\n{image_ocr_text}\n{image_captions_text}"
-
-        # Send to Llama for summarization
         user_prompt = (
-            "Combine the text given to you. They are from the same Teams meeting slides: "
-            "one is the slide text, another is the slide pictures' text, and one contains captions "
-            "generated for the pictures to help understand them better. "
-            "Combine the texts into one paragraph. Do not add anything of your own."
-        )
-        response = ask_llama(user_prompt, combined_context)
+                "Combine the text given to you. They are from the same Teams meeting. One is the "
+                "talking during the meeting and one is the slides content"
+            )
+        summary = ask_llama(user_prompt, combined_summary)
 
-        # Remove temp file
-        os.remove(temp_path)
-
-        return {"summary": response}
+        return {"summary": summary}
     except Exception as e:
         return {"error": str(e)}
 
