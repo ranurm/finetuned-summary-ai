@@ -7,11 +7,29 @@ import PyPDF2
 import pytesseract
 from dotenv import load_dotenv
 from PIL import Image
-from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import BlipProcessor, BlipForConditionalGeneration, AutoTokenizer, AutoModelForSeq2SeqLM
 from groq import Groq
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 api_key = os.getenv("CROGAPI_KEY")
+
+# Initialize fine-tuned model
+try:
+    logger.info("Initializing models...")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    logger.info(f"Using device: {device}")
+    
+    logger.info("Loading fine-tuned model...")
+    tokenizer = AutoTokenizer.from_pretrained("pmranu/fine-tuned-led-summarizer")
+    model = AutoModelForSeq2SeqLM.from_pretrained("pmranu/fine-tuned-led-summarizer").to(device)
+    logger.info("Fine-tuned model loaded successfully")
+except Exception as e:
+    logger.error(f"Error initializing models: {str(e)}")
+    raise
 
 def extract_text_from_pdf(pdf_path):
     """Extracts text from a PDF file."""
@@ -83,11 +101,16 @@ def generate_image_captions(pdf_path, output_dir="extracted_images"):
 
     return "\n".join(captions)
 
-def ask_llama(prompt, context):
-    """Sends a prompt to the Llama model and returns a response."""
-    client = Groq(api_key=api_key)
-    response = client.chat.completions.create(
-        messages=[{"role": "user", "content": f"{prompt} {context}"}],
-        model="llama-3.3-70b-versatile"
-    )
-    return response.choices[0].message.content
+def ask_llama(prompt, context, model_type="llama"):
+    """Sends a prompt to either Llama or fine-tuned model and returns a response."""
+    if model_type == "llama":
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": f"{prompt} {context}"}],
+            model="llama-3.3-70b-versatile"
+        )
+        return response.choices[0].message.content
+    else:  # fine-tuned model
+        inputs = tokenizer(prompt + " " + context, return_tensors="pt", max_length=1024, truncation=True).to(device)
+        outputs = model.generate(**inputs, max_length=150, min_length=40, length_penalty=2.0, num_beams=4)
+        return tokenizer.decode(outputs[0], skip_special_tokens=True)

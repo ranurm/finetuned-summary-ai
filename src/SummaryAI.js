@@ -6,6 +6,7 @@ const SummaryAI = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
+  const [selectedModel, setSelectedModel] = useState('llama');
 
   const mp4InputRef = useRef(null);
   const pdfInputRef = useRef(null);
@@ -48,11 +49,12 @@ const SummaryAI = () => {
     if (!isValid()) return;
 
     setLoading(true);
-    setSummary('Processing...'); // Add immediate feedback
+    setSummary('Processing...');
 
     const formData = new FormData();
     if (mp4File) formData.append('mp4_file', mp4File);
     if (pdfFile) formData.append('pdf_file', pdfFile);
+    formData.append('model', selectedModel);
 
     try {
       console.log('Sending files to backend...');
@@ -89,6 +91,23 @@ const SummaryAI = () => {
         Upload your meeting recording and slides.<br />
         We'll generate a smart summary for you.
       </p>
+
+      {/* Model Selection Slider */}
+      <div className="model-selection">
+        <label className="model-label">Model Selection:</label>
+        <div className="slider-container">
+          <span className={`model-option ${selectedModel === 'llama' ? 'active' : ''}`}>Llama</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={selectedModel === 'finetuned'}
+              onChange={(e) => setSelectedModel(e.target.checked ? 'finetuned' : 'llama')}
+            />
+            <span className="slider round"></span>
+          </label>
+          <span className={`model-option ${selectedModel === 'finetuned' ? 'active' : ''}`}>Fine-tuned</span>
+        </div>
+      </div>
 
       {/* MP4 Upload Box */}
       <div
