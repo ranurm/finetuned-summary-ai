@@ -7,11 +7,21 @@ import PyPDF2
 import pytesseract
 from dotenv import load_dotenv
 from PIL import Image
+<<<<<<< Updated upstream
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from groq import Groq
+=======
+from transformers import BlipProcessor, BlipForConditionalGeneration, AutoTokenizer, AutoModelForSeq2SeqLM
+import logging
+import openai
+
+# Configure logging
+logger = logging.getLogger(__name__)
+>>>>>>> Stashed changes
 
 load_dotenv()
-api_key = os.getenv("CROGAPI_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = openai_api_key
 
 def extract_text_from_pdf(pdf_path):
     """Extracts text from a PDF file."""
@@ -83,6 +93,7 @@ def generate_image_captions(pdf_path, output_dir="extracted_images"):
 
     return "\n".join(captions)
 
+<<<<<<< Updated upstream
 def ask_llama(prompt, context):
     """Sends a prompt to the Llama model and returns a response."""
     client = Groq(api_key=api_key)
@@ -91,3 +102,41 @@ def ask_llama(prompt, context):
         model="llama-3.3-70b-versatile"
     )
     return response.choices[0].message.content
+=======
+def generate_summary(prompt, context):
+    """Generates a summary using the fine-tuned model."""
+    try:
+        logger.info("Generating summary with fine-tuned model...")
+        inputs = tokenizer(prompt + " " + context, return_tensors="pt", max_length=1024, truncation=True).to(device)
+        outputs = model.generate(**inputs, max_length=150, min_length=40, length_penalty=2.0, num_beams=4)
+        summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        logger.info("Summary generation completed")
+        return summary
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}")
+        return f"Error generating summary: {str(e)}"
+
+def askModel(prompt, context):
+    """Generates a summary using OpenAI's fine-tuned model."""
+    try:
+        logger.info("Generating summary with OpenAI fine-tuned model...")
+        
+        # Combine prompt and context into one message
+        message_content = f"{prompt}\n\n{context}"
+        
+        # Call OpenAI API with the fine-tuned model
+        response = openai.chat.completions.create(
+            model="ft:gpt-4o-mini-2024-07-18:personal:capstone-10:BCiXe4PO",
+            messages=[{"role": "user", "content": message_content}],
+            temperature=0.7,
+            max_tokens=16000
+        )
+        
+        # Extract and return the summary
+        summary = response.choices[0].message.content
+        logger.info("OpenAI summary generation completed")
+        return summary
+    except Exception as e:
+        logger.error(f"Error generating OpenAI summary: {str(e)}")
+        return f"Error generating summary: {str(e)}"
+>>>>>>> Stashed changes

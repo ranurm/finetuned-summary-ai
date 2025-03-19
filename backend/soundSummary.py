@@ -19,6 +19,7 @@ def transcribe_audio(audio_file: str, chunk_length_s: int = 30) -> str:
             temp_audio = extract_audio(audio_file)
             audio_file = temp_audio
         
+<<<<<<< Updated upstream
         # Load Whisper processor and set forced decoder IDs
         processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
         forced_decoder_ids = processor.get_decoder_prompt_ids(language="en", task="transcribe")
@@ -34,6 +35,52 @@ def transcribe_audio(audio_file: str, chunk_length_s: int = 30) -> str:
         # Perform transcription
         result = pipe(audio_file, chunk_length_s=chunk_length_s, generate_kwargs={"forced_decoder_ids": forced_decoder_ids})
         
+=======
+        # Check if ffmpeg is available
+        try:
+            import subprocess
+            ffmpeg_result = subprocess.run(['ffmpeg', '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            ffmpeg_available = ffmpeg_result.returncode == 0
+        except (FileNotFoundError, subprocess.SubprocessError):
+            ffmpeg_available = False
+        
+        if not ffmpeg_available:
+            logger.error("FFmpeg not found. Please install FFmpeg and add it to your PATH.")
+            return "Error: FFmpeg not found. Please install FFmpeg and add it to your PATH. See installation instructions at https://ffmpeg.org/download.html"
+        
+        # Perform transcription with error handling
+        try:
+            logger.info("Starting transcription...")
+            result = pipe(
+                audio_file,
+                chunk_length_s=chunk_length_s,
+                generate_kwargs={"forced_decoder_ids": forced_decoder_ids},
+                return_timestamps=False
+            )
+            logger.info("Transcription completed successfully")
+            return result["text"]
+        except Exception as e:
+            logger.error(f"Error during transcription: {str(e)}")
+            # Try with smaller chunk size if the first attempt fails
+            try:
+                logger.info("Retrying with smaller chunk size...")
+                result = pipe(
+                    audio_file,
+                    chunk_length_s=15,  # Smaller chunk size
+                    generate_kwargs={"forced_decoder_ids": forced_decoder_ids},
+                    return_timestamps=False
+                )
+                logger.info("Transcription completed successfully with smaller chunks")
+                return result["text"]
+            except Exception as e2:
+                logger.error(f"Error during second transcription attempt: {str(e2)}")
+                raise
+
+    except Exception as e:
+        logger.error(f"Error in transcribe_audio: {str(e)}")
+        return f"Error processing file: {str(e)}"
+    finally:
+>>>>>>> Stashed changes
         # Cleanup temporary file
         if temp_audio and os.path.exists(temp_audio):
             os.remove(temp_audio)

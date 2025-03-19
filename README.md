@@ -6,6 +6,24 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm run app`
+
+Runs both the Python backend and React frontend concurrently.\
+This is the recommended way to start the application for development.
+
+- The backend server will run on port 8000: [http://localhost:8000](http://localhost:8000)
+- The frontend will run on port 3000: [http://localhost:3000](http://localhost:3000)
+
+Before first use, install the required packages:
+```bash
+# Install frontend dependencies
+npm install
+
+# Install backend dependencies
+cd backend
+pip install -r requirements.txt
+```
+
 ### `npm start`
 
 Runs the app in the development mode.\
