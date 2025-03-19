@@ -7,17 +7,12 @@ import PyPDF2
 import pytesseract
 from dotenv import load_dotenv
 from PIL import Image
-<<<<<<< Updated upstream
-from transformers import BlipProcessor, BlipForConditionalGeneration
-from groq import Groq
-=======
 from transformers import BlipProcessor, BlipForConditionalGeneration, AutoTokenizer, AutoModelForSeq2SeqLM
 import logging
 import openai
 
 # Configure logging
 logger = logging.getLogger(__name__)
->>>>>>> Stashed changes
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -93,16 +88,6 @@ def generate_image_captions(pdf_path, output_dir="extracted_images"):
 
     return "\n".join(captions)
 
-<<<<<<< Updated upstream
-def ask_llama(prompt, context):
-    """Sends a prompt to the Llama model and returns a response."""
-    client = Groq(api_key=api_key)
-    response = client.chat.completions.create(
-        messages=[{"role": "user", "content": f"{prompt} {context}"}],
-        model="llama-3.3-70b-versatile"
-    )
-    return response.choices[0].message.content
-=======
 def generate_summary(prompt, context):
     """Generates a summary using the fine-tuned model."""
     try:
@@ -139,4 +124,3 @@ def askModel(prompt, context):
     except Exception as e:
         logger.error(f"Error generating OpenAI summary: {str(e)}")
         return f"Error generating summary: {str(e)}"
->>>>>>> Stashed changes

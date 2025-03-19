@@ -1,7 +1,27 @@
 import os
 import torch
 from transformers import pipeline, WhisperProcessor
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# Initialize Whisper pipeline
+try:
+    # Set up English forced decoding
+    forced_decoder_ids = None
+    
+    # Initialize the transcription pipeline
+    pipe = pipeline(
+        "automatic-speech-recognition",
+        model="openai/whisper-small",
+        chunk_length_s=30,
+        device="cpu"
+    )
+    logger.info("Whisper pipeline initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Whisper pipeline: {str(e)}")
 
 def extract_audio(video_file: str, output_audio: str = "temp_audio.wav") -> str:
     """Extracts audio from an MP4 file and saves it as WAV."""
@@ -11,31 +31,15 @@ def extract_audio(video_file: str, output_audio: str = "temp_audio.wav") -> str:
 
 def transcribe_audio(audio_file: str, chunk_length_s: int = 30) -> str:
     """Transcribes audio using Whisper with forced English language decoding."""
+    temp_audio = None
+    result = None
+    
     try:
-        temp_audio = None
-        
         # Convert video to audio if needed
         if (audio_file.endswith(".mp4")):
             temp_audio = extract_audio(audio_file)
             audio_file = temp_audio
         
-<<<<<<< Updated upstream
-        # Load Whisper processor and set forced decoder IDs
-        processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
-        forced_decoder_ids = processor.get_decoder_prompt_ids(language="en", task="transcribe")
-        
-        # Initialize Whisper pipeline
-        device = "cuda:0" if torch.cuda.is_available() else "cpu"
-        pipe = pipeline(
-            "automatic-speech-recognition",
-            model="openai/whisper-large-v2",
-            device=device
-        )
-        
-        # Perform transcription
-        result = pipe(audio_file, chunk_length_s=chunk_length_s, generate_kwargs={"forced_decoder_ids": forced_decoder_ids})
-        
-=======
         # Check if ffmpeg is available
         try:
             import subprocess
@@ -80,11 +84,10 @@ def transcribe_audio(audio_file: str, chunk_length_s: int = 30) -> str:
         logger.error(f"Error in transcribe_audio: {str(e)}")
         return f"Error processing file: {str(e)}"
     finally:
->>>>>>> Stashed changes
         # Cleanup temporary file
         if temp_audio and os.path.exists(temp_audio):
-            os.remove(temp_audio)
-        
-        return result["text"]
-    except Exception as e:
-        return f"Error processing file: {str(e)}"
+            try:
+                os.remove(temp_audio)
+                logger.info("Temporary audio file removed")
+            except Exception as e:
+                logger.error(f"Error removing temporary file: {str(e)}")

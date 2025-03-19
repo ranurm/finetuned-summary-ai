@@ -3,11 +3,18 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from tempfile import NamedTemporaryFile
 import uvicorn
+import logging
+import traceback
 
 from slideSummary import extract_text_from_pdf, extract_images_and_ocr, generate_image_captions, askModel
 from soundSummary import transcribe_audio
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
+temp_files = []
 
 # Add the CORS middleware to the FastAPI app
 app.add_middleware(
@@ -18,10 +25,6 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-<<<<<<< Updated upstream
-@app.post("/generate_summary/")
-async def generate_summary(mp4_file: UploadFile = File(None), pdf_file: UploadFile = File(None)):
-=======
 @app.on_event("startup")
 async def startup_event():
     """Log when the server starts up."""
@@ -39,7 +42,6 @@ async def shutdown_event():
 
 @app.post("/generate_summary/")
 async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: UploadFile = File(None)):
->>>>>>> Stashed changes
     """API endpoint to receive a video file and/or a PDF file, process them, and return a combined summary."""
     try:
         transcription = ""
@@ -56,12 +58,7 @@ async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: Uplo
                 temp_path = temp_file.name
 
             transcription = transcribe_audio(temp_path)
-<<<<<<< Updated upstream
-            print(f"Transcription generated: {len(transcription)} characters")
-            os.remove(temp_path)
-=======
             logger.info(f"Transcription generated: {len(transcription)} characters")
->>>>>>> Stashed changes
 
         # Process PDF file if provided
         if pdf_file:
@@ -75,18 +72,6 @@ async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: Uplo
             image_captions_text = generate_image_captions(temp_path)
 
             combined_context = f"{pdf_text}\n{image_ocr_text}\n{image_captions_text}"
-<<<<<<< Updated upstream
-            user_prompt = (
-                "Combine the text given to you. They are from the same Teams meeting slides: "
-                "one is the slide text, another is the slide pictures' text, and one contains captions "
-                "generated for the pictures to help understand them better. "
-                "Combine the texts into one paragraph. Do not add anything of your own."
-            )
-            pdf_summary = ask_llama(user_prompt, combined_context)
-            print(f"PDF summary generated: {len(pdf_summary)} characters")
-            os.remove(temp_path)
-=======
->>>>>>> Stashed changes
 
         # Combine transcription and PDF content
         meeting_content = ""
@@ -103,20 +88,10 @@ async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: Uplo
                 "message": "No content provided for summarization"
             }
         
-<<<<<<< Updated upstream
-        user_prompt = (
-            "Combine the text given to you. They are from the same Teams meeting. One is the "
-            "talking during the meeting, transcription, and one is the slides content PDF summary."
-            "The talking is tiny bit more important than the slides. Combine the texts into one paragraph. "
-        )
-        final_summary = ask_llama(user_prompt, combined_summary)
-        print(f"Final summary generated: {len(final_summary)} characters")
-=======
         # Generate the summary using OpenAI's fine-tuned model
         prompt = "Please provide a concise summary of this meeting:"
         final_summary = askModel(prompt, meeting_content)
         logger.info(f"Final summary generated: {len(final_summary)} characters")
->>>>>>> Stashed changes
 
         return {
             "summary": final_summary,
@@ -131,12 +106,6 @@ async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: Uplo
             "status": "error",
             "message": str(e)
         }
-<<<<<<< Updated upstream
-
-# Run FastAPI server
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
-=======
     finally:
         # Cleanup all temporary files
         for temp_file in temp_files:
@@ -171,4 +140,3 @@ if __name__ == "__main__":
         logger.error(f"Failed to start server: {str(e)}")
         logger.error(traceback.format_exc())
         raise
->>>>>>> Stashed changes

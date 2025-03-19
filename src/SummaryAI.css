@@ -103,15 +103,6 @@ h2 {
   overflow: hidden;
 }
 
-<<<<<<< Updated upstream
-  .placeholder-text {
-    font-size: 1em;
-    line-height: 1.5;
-    color: #aaa;
-    text-align: left; /* Align text to the left */
-    margin-top: 100px; /* Center the placeholder text vertically */
-  }
-=======
 .upload-section:hover {
   border-color: var(--primary-light);
   transform: translateY(-2px);
@@ -598,4 +589,3 @@ h2 {
   margin-top: 0.75rem;
   margin-bottom: 0;
 }
->>>>>>> Stashed changes

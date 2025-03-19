@@ -5,16 +5,12 @@ function SummaryAI() {
   const [mp4File, setMp4File] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [summary, setSummary] = useState('');
-<<<<<<< Updated upstream
-
-=======
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
   const [dragActive, setDragActive] = useState({ mp4: false, pdf: false });
   const [progress, setProgress] = useState(0);
   
->>>>>>> Stashed changes
   const mp4InputRef = useRef(null);
   const pdfInputRef = useRef(null);
   const summaryRef = useRef(null);
@@ -130,17 +126,9 @@ function SummaryAI() {
     }
     
     setLoading(true);
-<<<<<<< Updated upstream
-    setSummary('Processing...'); // Add immediate feedback
-
-    const formData = new FormData();
-    if (mp4File) formData.append('mp4_file', mp4File);
-    if (pdfFile) formData.append('pdf_file', pdfFile);
-=======
     setError(null);
     setSummary('');
     setProgress(0);
->>>>>>> Stashed changes
 
     try {
       const formData = new FormData();
@@ -215,25 +203,6 @@ function SummaryAI() {
 
   return (
     <div className="summary-ai">
-<<<<<<< Updated upstream
-      <h2>AI Meeting Summary Tool</h2>
-      <p className="instruction-text">
-        Upload your meeting recording and slides.<br />
-        We'll generate a smart summary for you.
-      </p>
-
-      {/* MP4 Upload Box */}
-      <div
-        className="upload-box"
-        onDrop={(e) => handleFileDrop(e, 'mp4')}
-        onDragOver={preventDefaults}
-        onDragEnter={preventDefaults}
-        onDragLeave={preventDefaults}
-      >
-        <p>🎥 Drag & drop your MP4 meeting recording here</p>
-        <button className="upload-btn" onClick={() => mp4InputRef.current.click()}>
-          Choose MP4 File
-=======
       <h1>AI Meeting Summary Tool</h1>
       
       <div className="file-upload">
@@ -311,7 +280,6 @@ function SummaryAI() {
           disabled={loading || (!mp4File && !pdfFile)}
         >
           {loading ? 'Generating Summary...' : 'Generate Summary'}
->>>>>>> Stashed changes
         </button>
       </div>
 
