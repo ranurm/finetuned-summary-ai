@@ -526,16 +526,14 @@ h2 {
 
 /* Summary content styling */
 .summary-headline {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin: 1.5rem 0 1rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--primary-light);
-  background: linear-gradient(90deg, var(--primary-dark), var(--primary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 1rem 0 0.7rem 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--primary-light);
   display: inline-block;
+  opacity: 0.85;
 }
 
 /* First headline should have smaller top margin */
@@ -588,4 +586,57 @@ h2 {
 .summary-numbered ol {
   margin-top: 0.75rem;
   margin-bottom: 0;
+}
+
+/* Main section headers (like "1. Introduction/Purpose:") */
+.summary-main-section {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 1.8rem 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-light);
+  display: block;
+}
+
+.section-number {
+  color: var(--primary-color);
+  margin-right: 0.5rem;
+  font-weight: 700;
+}
+
+/* First main section should have smaller top margin */
+.summary-content > .summary-main-section:first-child {
+  margin-top: 0.5rem;
+}
+
+/* Sub-section headers (major topic headings within a section) */
+.summary-sub-section {
+  font-weight: 600;
+  color: var(--text-color);
+  display: inline-block;
+  margin: 1rem 0 0.5rem 0;
+  opacity: 0.9;
+}
+
+/* Sub-sub-section headers (with text after them) */
+.summary-sub-sub-section {
+  font-weight: 600; /* Just bold */
+  color: var(--text-color); /* Same color as regular text */
+  display: inline; /* Inline with the following text */
+  font-size: 1rem; /* Same size as regular text */
+}
+
+/* Lists - ensure all list text is the same color */
+.summary-bullet, 
+.summary-numbered {
+  color: var(--text-color);
+}
+
+/* Style for any content within the summary */
+.summary-content p,
+.summary-content li,
+.summary-content ul,
+.summary-content ol {
+  color: var(--text-color);
 }
