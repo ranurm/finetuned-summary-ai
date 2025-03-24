@@ -130,6 +130,7 @@ function SummaryAI() {
   /**
    * Formats the plain text summary into structured HTML
    * Converts various patterns in the text to formatted HTML elements:
+   * - Markdown-style headlines (## Headline ##) become <h3> elements
    * - Main section headers (1. Introduction:) become <h3> elements
    * - Sub-section headers become styled spans
    * - Bullet points become <li> elements in <ul> lists
@@ -141,16 +142,21 @@ function SummaryAI() {
     // Remove "Meeting Summary" from the beginning if it exists
     let processedText = text.replace(/^Meeting Summary\s*\n+/i, '');
     
+    // Handle markdown-style headlines with ## Text ## format
+    const markdownHeadlinesFormatted = processedText.replace(/##\s*(.*?)\s*##/g, '<h3 class="summary-main-section">$1</h3>');
+    
     // First handle main section headers (like "1. Introduction/Purpose:")
-    const mainSectionFormatted = processedText.replace(/(\d+)\.\s+(.*?):/g, '<h3 class="summary-main-section"><span class="section-number">$1.</span> $2:</h3>');
+    // Ensure we're matching full headers at the start of a line, not text that happens to have a number and colon
+    const mainSectionFormatted = markdownHeadlinesFormatted.replace(/^(\d+)\.\s+(.*?):/gm, '<h3 class="summary-main-section"><span class="section-number">$1.</span> $2:</h3>');
     
     // Handle sub-section headers (colons at the end of a line - usually sub-topics)
     // Match only at the beginning of a line or after a newline, and make sure they're standalone headers
-    const subSectionFormatted = mainSectionFormatted.replace(/^([^<\n][^:]+):((?=\s*$|\s+[A-Z]))/gm, '<span class="summary-sub-section">$1:</span>$2');
+    // Exclude patterns that match "Rate Below Target:" by checking the preceding text doesn't end with "Rate"
+    const subSectionFormatted = mainSectionFormatted.replace(/^([^<\n][^:]*?)(?<!Rate)\b:((?=\s*$|\s+[A-Z]))/gm, '<span class="summary-sub-section">$1:</span>$2');
     
     // Handle sub-sub-section headers that have text after them (like "Reflected XSS via AJAX: Uses crafted links...")
     // Replace with inline bold style, keeping the same font size
-    const subSubSectionFormatted = subSectionFormatted.replace(/^([^<\n][^:]+):(\s+)([^<\n])/gm, '<span class="summary-sub-sub-section">$1:</span>$2$3');
+    const subSubSectionFormatted = subSectionFormatted.replace(/^([^<\n][^:]*?)(?<!Rate)\b:(\s+)([^<\n])/gm, '<span class="summary-sub-sub-section">$1:</span>$2$3');
     
     // Replace **Headline** with styled headline (if any remain)
     const headlineFormatted = subSubSectionFormatted.replace(/\*\*(.*?)\*\*/g, '<h3 class="summary-headline">$1</h3>');

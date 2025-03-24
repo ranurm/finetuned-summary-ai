@@ -148,7 +148,36 @@ async def api_generate_summary(mp4_file: UploadFile = File(None), pdf_file: Uplo
         
         # === GENERATE SUMMARY ===
         # Set prompt for the AI model
-        prompt = "Please provide a concise summary of this meeting:"
+        prompt = """
+                You are an advanced AI assistant tasked with summarizing a meeting based on a transcript and meeting slides. Generate a structured summary using the following format:
+
+                ##Meeting Summary##
+                - Meeting Title: [Extract or summarize the title]
+                - Attendants: [List key participants mentioned in the transcript or slides]
+                - Date: [Extract the meeting date if available]
+
+                ##1. Introduction##
+                Provide a brief overview of the meeting, including its purpose and key objectives. Summarize why the meeting was held and any relevant background context.
+
+                ##2. Key Discussion Points##
+                Summarize the main topics discussed, focusing on essential details and any differing perspectives. Group related discussions into subtopics where applicable.
+
+                ##3. Action Steps##
+                List concrete action items, including:
+                - What needs to be done
+                - Who is responsible
+                - Any deadlines or follow-up dates
+
+                ##4. Conclusion##
+                Summarize the key takeaways from the meeting, including final decisions and any closing remarks.
+
+                **Instructions:**
+                - Ensure clarity and conciseness.
+                - Extract key insights without unnecessary details.
+                - Structure the summary logically and professionally.
+                - Use the given headlines as only headlines. List other text as bulletpoints
+                - If certain information is missing from the input, indicate it clearly instead of making assumptions.
+                """
         # Call the language model to generate the summary
         final_summary = askModel(prompt, meeting_content)
         logger.info(f"Final summary generated: {len(final_summary)} characters")
