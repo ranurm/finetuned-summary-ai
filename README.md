@@ -1,88 +1,135 @@
-# Getting Started with Create React App
+# AI Meeting Summary Tool
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An intelligent application that automatically generates concise, well-structured summaries from meeting recordings and presentation slides.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Video Processing**: Extract and transcribe audio from MP4 meeting recordings
+- **PDF Analysis**: Extract text, perform OCR on images, and generate image captions from presentation slides
+- **AI-Powered Summarization**: Generate comprehensive summaries using fine-tuned language models
+- **Clean Formatting**: Present summaries with structured headings, bullet points, and organized sections
+- **Modern UI**: Intuitive interface with drag-and-drop file uploads and real-time progress tracking
+- **Multi-modal Analysis**: Combine insights from both audio and visual content for more comprehensive summaries
 
-### `npm run app`
+## Technologies Used
 
-Runs both the Python backend and React frontend concurrently.\
-This is the recommended way to start the application for development.
+### Backend
+- Python with FastAPI
+- OpenAI fine-tuned models
+- Whisper for audio transcription
+- PyMuPDF and PyPDF2 for PDF processing
+- Tesseract OCR for image text extraction
+- BLIP for image captioning
 
-- The backend server will run on port 8000: [http://localhost:8000](http://localhost:8000)
-- The frontend will run on port 3000: [http://localhost:3000](http://localhost:3000)
+### Frontend
+- React.js
+- Modern CSS with animations and responsive design
 
-Before first use, install the required packages:
+## Installation
+
+### Prerequisites
+- Python 3.9+
+- Node.js and npm
+- FFmpeg (for audio processing)
+- Tesseract OCR
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/finetuned-summary-ai.git
+   cd finetuned-summary-ai
+   ```
+
+2. Install backend dependencies:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
+
+3. Set up environment variables:
+   ```bash
+   # Create a .env file in your project root
+   # Add your OpenAI API key to the .env file
+   # OPENAI_API_KEY=your_api_key_here
+   ```
+
+4. Install frontend dependencies:
+   ```bash
+   cd ..
+   npm install
+   ```
+
+## Usage
+
+### Starting the Application
+
+Run both backend and frontend with a single command:
 ```bash
-# Install frontend dependencies
-npm install
+# On windows
+start-app.bat
 
-# Install backend dependencies
-cd backend
-pip install -r requirements.txt
+# On macOS or Linux
+start-app-unix.sh
 ```
 
-### `npm start`
+Or start them separately:
+- Backend: `cd backend && python summary.py`
+- Frontend: `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Generating Summaries
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Open your browser to [http://localhost:3000](http://localhost:3000)
+2. Upload a meeting recording (MP4), presentation slides (PDF), or both
+3. Click "Generate Summary"
+4. View the formatted summary and copy it to your clipboard as needed
 
-### `npm test`
+## Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+finetuned-summary-ai/
+├── backend/                # Python backend
+│   ├── slideSummary.py     # PDF processing and summarization
+│   ├── soundSummary.py     # Audio extraction and transcription
+│   ├── summary.py          # FastAPI server and API endpoints
+│   └── requirements.txt    # Python dependencies
+├── src/                    # React frontend
+│   ├── SummaryAI.js        # Main application component
+│   ├── SummaryAI.css       # Styling
+│   └── ...                 # Other React components
+├── public/                 # Static assets
+└── package.json            # npm configuration
+```
 
-### `npm run build`
+## How It Works
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Input Processing**:
+   - MP4 files: Audio is extracted and transcribed using Whisper
+   - PDF files: Text is extracted, images are processed with OCR, and captions are generated
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Summarization**:
+   - Content from audio transcription and PDF analysis is combined
+   - A fine-tuned language model generates a structured summary
+   - The summary is formatted with sections, bullet points, and hierarchical structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Presentation**:
+   - The summary is displayed with clean formatting
+   - Easy copying to clipboard for use in meeting notes or documentation
 
-### `npm run eject`
+## Configuration
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Adjust the application by modifying:
+- `.env` file for API keys and other environment variables
+- `backend/slideSummary.py` for summarization model parameters
+- `backend/soundSummary.py` for transcription settings
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+[MIT License](LICENSE)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Acknowledgements
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- OpenAI for the fine-tuned models, costs 3$ per 1 million tokens
+- Salesforce for the BLIP image captioning model
+- OpenAI for the Whisper speech recognition model
+- The FastAPI and React communities for their excellent frameworks
