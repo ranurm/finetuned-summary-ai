@@ -37,7 +37,7 @@ An intelligent application that automatically generates concise, well-structured
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/finetuned-summary-ai.git
+   git clone https://github.com/ranurm/finetuned-summary-ai.git
    cd finetuned-summary-ai
    ```
 
